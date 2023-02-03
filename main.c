@@ -6,6 +6,7 @@
 #define AC_NORMAL "\033[0m"
 #define AC_RED "\033[0;31m"
 #define NAME_LEN 50
+#define MAX_LINE_LENGTH 100
 #define MAX_SPIELER 50
 #define DATABASE_FILEPATH "database.txt"
 
@@ -34,10 +35,11 @@ int eingabe();
 int highScoreList();
 int sucheName();
 int resetDisplayBoard();
-int writeData();
+int close();
 
 
 int main() {
+    init();
     char yn = 1;
     while (yn !=110)
     {
@@ -84,19 +86,106 @@ int main() {
             return 0;
     }
 
-
     return 0;
 }
 
 int init()
 {
+    FILE *file = fopen(DATABASE_FILEPATH, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
 
-
+    char line[MAX_LINE_LENGTH];
+    spielerAnzahl = 0;
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        for (int i = 0; i < MAX_LINE_LENGTH; i++) {
+            if(line[i] != 59)
+            {
+                spielerListe[spielerAnzahl].name[i] = line[i];
+            } else
+            {
+                int hscore = 0;
+                for (int j = 0; j < 10; ++j) {
+                    i++;
+                    if(line[i] != 59)
+                    {
+                        hscore *= 10;
+                        hscore += (int)(line[i]) - 48;
+                    } else
+                    {
+                        spielerListe[spielerAnzahl].score = hscore;
+                        break;
+                    }
+                }
+                int hplazierung = 0;
+                for (int j = 0; j < 10; ++j) {
+                    i++;
+                    if(line[i] != 59)
+                    {
+                        hplazierung *= 10;
+                        hplazierung += (int)(line[i]) - 48;
+                    } else
+                    {
+                        spielerListe[spielerAnzahl].plazierung = hplazierung;
+                        break;
+                    }
+                }
+                int hanzahlDerSpiele = 0;
+                for (int j = 0; j < 10; ++j) {
+                    i++;
+                    if(line[i] != 59)
+                    {
+                        hanzahlDerSpiele *= 10;
+                        hanzahlDerSpiele += (int)(line[i]) - 48;
+                    } else
+                    {
+                        spielerListe[spielerAnzahl].anzahlDerSpiele = hanzahlDerSpiele;
+                        i++;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        spielerAnzahl++;
+    }
+    fclose(file);
     return 0;
 }
 
 int sortieren()
 {
+    int t = 1;
+    char tname[NAME_LEN];
+    int tscore, tplazierung, tanzahlDerSpiele;
+    while(t != 0)
+    {
+        t = 0;
+        for (int i = 0; i < spielerAnzahl-1; i++) {
+            if(spielerListe[i].score < spielerListe[i+1].score)
+            {
+                t = 1;
+                strcpy(tname, spielerListe[i].name);
+                tscore = spielerListe[i].score;
+                tplazierung = spielerListe[i].plazierung;
+                tanzahlDerSpiele = spielerListe[i].anzahlDerSpiele;
+                strcpy(spielerListe[i].name, spielerListe[i+1].name);
+                spielerListe[i].score = spielerListe[i+1].score;
+                spielerListe[i].plazierung = spielerListe[i+1].plazierung;
+                spielerListe[i].anzahlDerSpiele = spielerListe[i+1].anzahlDerSpiele;
+                strcpy(spielerListe[i+1].name, tname);
+                spielerListe[i+1].score = tscore;
+                spielerListe[i+1].plazierung = tplazierung;
+                spielerListe[i+1].anzahlDerSpiele = tanzahlDerSpiele;
+            }
+        }
+    }
+
+    for (int i = 0; i < spielerAnzahl; ++i) {
+        spielerListe[i].plazierung = i+1;
+    }
 
     return 0;
 }
@@ -117,7 +206,7 @@ int auswahl()
             case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
             case 0:
                 // Daten speichern before vor dem Beenden von Programm
-                writeData();
+                close();
                 exit(0);
         }
     }
@@ -274,7 +363,8 @@ char checkWin()
     return 78;
 }
 
-int writeData(){
+int close(){
+    sortieren();
 
     FILE *database;
     // Datei in write mode öffnen
@@ -287,10 +377,10 @@ int writeData(){
 
     // Die Variable save_format zum speichern der formattierte String
     char save_format[64];
-    for (int i = 0; i < spielerAnzahl; ++i) {
+    for (int i = 0; i < spielerAnzahl; i++) {
 
         // alle daten formattieren und in die Variable save_format speichern
-        snprintf(save_format, sizeof(save_format), "%s\n%i\n%i\n%i\n",
+        snprintf(save_format, sizeof(save_format), "%s;%i;%i;%i;\n",
                  spielerListe[i].name,
                  spielerListe[i].score,
                  spielerListe[i].anzahlDerSpiele,
