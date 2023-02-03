@@ -19,7 +19,7 @@ typedef struct
 {
     char name[NAME_LEN];
     int score;
-    int plazierung;
+    int platzierung;
     int anzahlDerSpiele;
 } TSPIELER;
 
@@ -130,6 +130,10 @@ int main() {
     return 0;
 }
 
+/*
+ * Initialisierung des Spiels
+ * Spieler werden aus Datenbank geladen und in spielerListe geschrieben
+ */
 int init()
 {
     FILE *file = fopen(DATABASE_FILEPATH, "r");
@@ -160,16 +164,16 @@ int init()
                         break;
                     }
                 }
-                int hplazierung = 0;
+                int hplatzierung = 0;
                 for (int j = 0; j < 10; ++j) {
                     i++;
                     if(line[i] != 59)
                     {
-                        hplazierung *= 10;
-                        hplazierung += (int)(line[i]) - 48;
+                        hplatzierung *= 10;
+                        hplatzierung += (int)(line[i]) - 48;
                     } else
                     {
-                        spielerListe[spielerAnzahl].plazierung = hplazierung;
+                        spielerListe[spielerAnzahl].platzierung = hplatzierung;
                         break;
                     }
                 }
@@ -196,11 +200,14 @@ int init()
     return 0;
 }
 
+/*
+ * Sortiert die spielerListe nach Score
+ */
 int sortieren()
 {
     int t = 1;
     char tname[NAME_LEN];
-    int tscore, tplazierung, tanzahlDerSpiele;
+    int tscore, tplatzierung, tanzahlDerSpiele;
     while(t != 0)
     {
         t = 0;
@@ -210,27 +217,30 @@ int sortieren()
                 t = 1;
                 strcpy(tname, spielerListe[i].name);
                 tscore = spielerListe[i].score;
-                tplazierung = spielerListe[i].plazierung;
+                tplatzierung = spielerListe[i].platzierung;
                 tanzahlDerSpiele = spielerListe[i].anzahlDerSpiele;
                 strcpy(spielerListe[i].name, spielerListe[i+1].name);
                 spielerListe[i].score = spielerListe[i+1].score;
-                spielerListe[i].plazierung = spielerListe[i+1].plazierung;
+                spielerListe[i].platzierung = spielerListe[i+1].platzierung;
                 spielerListe[i].anzahlDerSpiele = spielerListe[i+1].anzahlDerSpiele;
                 strcpy(spielerListe[i+1].name, tname);
                 spielerListe[i+1].score = tscore;
-                spielerListe[i+1].plazierung = tplazierung;
+                spielerListe[i+1].platzierung = tplatzierung;
                 spielerListe[i+1].anzahlDerSpiele = tanzahlDerSpiele;
             }
         }
     }
 
     for (int i = 0; i < spielerAnzahl; ++i) {
-        spielerListe[i].plazierung = i+1;
+        spielerListe[i].platzierung = i+1;
     }
 
     return 0;
 }
 
+/*
+ * Anzeigen des Spiel-Menus
+ */
 int auswahl()
 {
     int cas = 5;
@@ -254,6 +264,11 @@ int auswahl()
     return 0;
 }
 
+/*
+ * Methode legt neuen Nutzer im Array an
+ * Erhöht spielerAnzahl um 1
+ * Alle Atribute des Spielers werden auf 0 gesetzt
+ */
 int nameEingabe()
 {
     char name[NAME_LEN];
@@ -286,20 +301,31 @@ void addNewPlayer(char name[NAME_LEN])
     spielerAnzahl++;
     strcpy(spielerListe[spielerAnzahl - 1].name, name);
     spielerListe[spielerAnzahl - 1].score = 0;
-    spielerListe[spielerAnzahl - 1].plazierung = spielerAnzahl;
+    spielerListe[spielerAnzahl - 1].platzierung = spielerAnzahl;
     spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
 }
 
+/*
+ * Gibt die Highscore Liste aus aller Spieler
+ * Sortiert nach Score
+ */
 int highScoreList()
 {
+    sortieren();
     printf("Platzierung   |   Name   |   Score   |   Anzahl der Spiele");
     for (int i = 0; i < spielerAnzahl; i++)
     {
-        printf("%d.   |   %s   |   %d   |   %d", spielerListe[i].plazierung, spielerListe[i].name, spielerListe[i].score, spielerListe[i].anzahlDerSpiele);
+        printf("%d.   |   %s   |   %d   |   %d", spielerListe[i].platzierung, spielerListe[i].name, spielerListe[i].score, spielerListe[i].anzahlDerSpiele);
     }
+    printf("Drücke eine Taste, um fortzufahren...\n");
+    getchar();
     return 0;
 }
 
+/*
+ * Sucht nach einem Spieler und gibt dessen Attribute aus
+ * @return index des gesuchten Spielers
+ */
 int sucheName(char name[NAME_LEN])
 {
     for (int i = 0; i < spielerAnzahl; i++)
@@ -308,9 +334,12 @@ int sucheName(char name[NAME_LEN])
         {
             printf("Der gesuchte name hat den Index: %d\n\n", i);
             printf("Name:              %s\n", spielerListe[i].name);
-            printf("Platzierung:       %d\n", spielerListe[i].plazierung);
+            printf("Platzierung:       %d\n", spielerListe[i].platzierung);
             printf("Score:             %d\n", spielerListe[i].score);
             printf("Anzahl der Spiele: %d\n", spielerListe[i].anzahlDerSpiele);
+            printf("\n");
+            printf("Drücke eine Taste, um fortzufahren...\n");
+            getchar();
             return i;
         }
     }
@@ -318,6 +347,11 @@ int sucheName(char name[NAME_LEN])
     return 0;
 }
 
+/*
+ * Gibt das Spielfeld aus
+ * X in rot
+ * O in blau
+ */
 void displayBoard()
 {
     system("cls");
@@ -359,6 +393,10 @@ void displayBoard()
 
 }
 
+/*
+ * Resettet das board array (Spielfeld)
+ * Setzt alle Werte von board auf " "
+ */
 int resetDisplayBoard()
 {
     memcpy(board, rBoard, sizeof rBoard);
@@ -366,6 +404,9 @@ int resetDisplayBoard()
     return 0;
 }
 
+/*
+ * Bei aufruf dieser FUnktion wird überprüft ob Spieler X oder Spieler O gewonnen hat
+ */
 char checkWin()
 {
     char winchecker[4];
@@ -413,6 +454,8 @@ char checkWin()
     return 78;
 }
 
+
+
 int getPlayerIndexByName(char name[NAME_LEN]){
     for (int i = 0; i < spielerAnzahl; i++)
     {
@@ -423,7 +466,10 @@ int getPlayerIndexByName(char name[NAME_LEN]){
     }
     return PLAYER_NAME_NOT_FOUND;
 }
-
+/*
+ * Speichern der spielerListe in einer text Datei
+ * Format: name;score;anzahlDerSpiele;platzierung
+*/
 int close(){
     sortieren();
 
@@ -445,7 +491,7 @@ int close(){
                  spielerListe[i].name,
                  spielerListe[i].score,
                  spielerListe[i].anzahlDerSpiele,
-                 spielerListe[i].plazierung
+                 spielerListe[i].platzierung
                  );
 
         // save_format in datenbank speichern
