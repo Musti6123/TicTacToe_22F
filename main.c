@@ -9,7 +9,7 @@
 #define MAX_LINE_LENGTH 100
 #define MAX_SPIELER 50
 #define DATABASE_FILEPATH "database.txt"
-
+#define PLAYER_NAME_NOT_FOUND 1000
 
 char board[4][4] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 char rBoard[4][4] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
@@ -35,15 +35,56 @@ int nameEingabe();
 int highScoreList();
 int sucheName();
 int resetDisplayBoard();
+int getPlayerIndexByName(char name[]);
+void addNewPlayer(char name[]);
 int close();
 
 
 int main() {
     init();
     char yn = 1;
+    char createNameInput; // to save y or n from user input
     while (yn !=110)
     {
         auswahl();
+
+        // get player names
+        char playerX[NAME_LEN];
+        int playerXIndex = PLAYER_NAME_NOT_FOUND;
+
+        char playerO[NAME_LEN];
+        int playerOIndex = PLAYER_NAME_NOT_FOUND;
+
+        printf("Enter the name of the player X: ");
+        scanf("%s", playerX);
+        playerXIndex = getPlayerIndexByName(playerX);
+
+        if(playerXIndex == PLAYER_NAME_NOT_FOUND){
+            printf("\na player with the name %s was not found \na new player with the name %s will be created, do you want to proceed? (y/n): ",playerX, playerX);
+            scanf(" %c", &createNameInput);
+
+            if(createNameInput == 121 || createNameInput == 89) {// if y or Y
+                addNewPlayer(playerX); // create the player
+            }
+            else{
+                continue; // skip one iteration of the while loop
+            }
+        }
+        printf("Enter the name of the player O: ");
+        scanf("%s", playerO);
+        playerOIndex = getPlayerIndexByName(playerO);
+
+        if(playerOIndex == PLAYER_NAME_NOT_FOUND){
+            printf("\na player with the name %s was not found\na new player with the name %s will be created, do you want to proceed? (y/n): ",playerO, playerO);
+            scanf(" %c", &createNameInput);
+
+            if(createNameInput == 121 || createNameInput == 89) {// if y or Y
+                addNewPlayer(playerO); // create the player
+            }
+            else{
+                continue; // skip one iteration of the while loop
+            }
+        }
 
         int x, y;
         char turn = 'X';
@@ -216,10 +257,6 @@ int auswahl()
 int nameEingabe()
 {
     char name[NAME_LEN];
-    // die drei variablen sind unbenutzt!!
-    int score = 0;
-    int plazierung = 0;
-    int anzahlDerSpiele = 0;
 
     char yn = 110;
     while (yn != 121)
@@ -237,15 +274,20 @@ int nameEingabe()
         scanf(" %c", &yn);
     }
 
+    addNewPlayer(name);
 
+    return 0;
+}
+
+// addNewPlayer adds a new player without the unneeded printf and scanf
+// it is the same logic but placed in a function to be used in other places
+void addNewPlayer(char name[NAME_LEN])
+{
     spielerAnzahl++;
     strcpy(spielerListe[spielerAnzahl - 1].name, name);
     spielerListe[spielerAnzahl - 1].score = 0;
     spielerListe[spielerAnzahl - 1].plazierung = spielerAnzahl;
     spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
-
-
-    return 0;
 }
 
 int highScoreList()
@@ -369,6 +411,17 @@ char checkWin()
         return 79;
     }
     return 78;
+}
+
+int getPlayerIndexByName(char name[NAME_LEN]){
+    for (int i = 0; i < spielerAnzahl; i++)
+    {
+        if (strncmp(spielerListe[i].name, name, NAME_LEN) == 0)
+        {
+            return i;
+        }
+    }
+    return PLAYER_NAME_NOT_FOUND;
 }
 
 int close(){
