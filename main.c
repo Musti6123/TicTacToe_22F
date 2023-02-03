@@ -34,7 +34,7 @@ int eingabe();
 int highScoreList();
 int sucheName();
 int resetDisplayBoard();
-int addPlayer(TSPIELER tspieler);
+int writeData();
 
 
 int main() {
@@ -115,7 +115,10 @@ int auswahl()
             case 3: printf("Gebe den zu suchenden Namen ein: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); sucheName(nameSearch); break;
             case 4: resetDisplayBoard(); return 0;
             case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
-            case 0: exit(0);
+            case 0:
+                // Daten speichern before vor dem Beenden von Programm
+                writeData();
+                exit(0);
         }
     }
     return 0;
@@ -144,8 +147,6 @@ int eingabe()
     spielerListe[spielerAnzahl - 1].plazierung = spielerAnzahl;
     spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
 
-    // Spieler in Datenbank speichern
-    addPlayer(spielerListe[spielerAnzahl - 1]);
 
     return 0;
 }
@@ -273,29 +274,37 @@ char checkWin()
     return 78;
 }
 
-int addPlayer(TSPIELER tspieler){
+int writeData(){
 
     FILE *database;
-    // Datei in append mode öffnen
-    database = fopen(DATABASE_FILEPATH, "a");
+    // Datei in write mode öffnen
+    database = fopen(DATABASE_FILEPATH, "w");
 
     if(database == NULL){
         printf("Fehler beim öffenen der Datenbank!");
         return 0;
     }
 
+    // zum speichern den Spieleranzahle in String
+    char s_spieleranzahl[5];
+    snprintf(s_spieleranzahl, sizeof(s_spieleranzahl), "%i", spielerAnzahl);
+    fputs(s_spieleranzahl, database);
+
     // Die Variable save_format zum speichern der formattierte String
     char save_format[64];
+    for (int i = 0; i < spielerAnzahl; ++i) {
 
-    // alle daten formattieren und in die Variable save_format speichern
-    snprintf(save_format, sizeof(save_format), "\n%s\n%i\n%i\n%i",
-             tspieler.name,
-             tspieler.score,
-             tspieler.anzahlDerSpiele,
-             tspieler.plazierung);
+        // alle daten formattieren und in die Variable save_format speichern
+        snprintf(save_format, sizeof(save_format), "\n%s\n%i\n%i\n%i",
+                 spielerListe[i].name,
+                 spielerListe[i].score,
+                 spielerListe[i].anzahlDerSpiele,
+                 spielerListe[i].plazierung
+                 );
 
-    // save_format in datenbank speichern
-    fputs(save_format,database);
+        // save_format in datenbank speichern
+        fputs(save_format,database);
+    }
 
     fclose(database);
 
