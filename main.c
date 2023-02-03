@@ -7,7 +7,7 @@
 #define AC_RED "\033[0;31m"
 #define NAME_LEN 50
 #define MAX_SPIELER 50
-
+#define DATABASE_FILEPATH "database.txt"
 
 
 char board[4][4] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
@@ -34,7 +34,7 @@ int eingabe();
 int highScoreList();
 int sucheName();
 int resetDisplayBoard();
-
+int addPlayer(TSPIELER tspieler);
 
 
 int main() {
@@ -124,9 +124,11 @@ int auswahl()
 int eingabe()
 {
     char name[NAME_LEN];
-    int score;
-    int plazierung;
-    int anzahlDerSpiele;
+    // die drei variablen sind unbenutzt!!
+    int score = 0;
+    int plazierung = 0;
+    int anzahlDerSpiele = 0;
+
     char yn = 110;
     while (yn != 121)
     {
@@ -141,6 +143,10 @@ int eingabe()
     spielerListe[spielerAnzahl - 1].score = 0;
     spielerListe[spielerAnzahl - 1].plazierung = spielerAnzahl;
     spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
+
+    // Spieler in Datenbank speichern
+    addPlayer(spielerListe[spielerAnzahl - 1]);
+
     return 0;
 }
 
@@ -265,4 +271,33 @@ char checkWin()
         return 79;
     }
     return 78;
+}
+
+int addPlayer(TSPIELER tspieler){
+
+    FILE *database;
+    // Datei in append mode öffnen
+    database = fopen(DATABASE_FILEPATH, "a");
+
+    if(database == NULL){
+        printf("Fehler beim öffenen der Datenbank!");
+        return 0;
+    }
+
+    // Die Variable save_format zum speichern der formattierte String
+    char save_format[64];
+
+    // alle daten formattieren und in die Variable save_format speichern
+    snprintf(save_format, sizeof(save_format), "\n%s\n%i\n%i\n%i",
+             tspieler.name,
+             tspieler.score,
+             tspieler.anzahlDerSpiele,
+             tspieler.plazierung);
+
+    // save_format in datenbank speichern
+    fputs(save_format,database);
+
+    fclose(database);
+
+    return 1;
 }
