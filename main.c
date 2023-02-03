@@ -285,17 +285,12 @@ int writeData(){
         return 0;
     }
 
-    // zum speichern den Spieleranzahle in String
-    char s_spieleranzahl[5];
-    snprintf(s_spieleranzahl, sizeof(s_spieleranzahl), "%i", spielerAnzahl);
-    fputs(s_spieleranzahl, database);
-
     // Die Variable save_format zum speichern der formattierte String
     char save_format[64];
     for (int i = 0; i < spielerAnzahl; ++i) {
 
         // alle daten formattieren und in die Variable save_format speichern
-        snprintf(save_format, sizeof(save_format), "\n%s\n%i\n%i\n%i",
+        snprintf(save_format, sizeof(save_format), "%s\n%i\n%i\n%i\n",
                  spielerListe[i].name,
                  spielerListe[i].score,
                  spielerListe[i].anzahlDerSpiele,
