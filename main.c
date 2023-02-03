@@ -31,7 +31,7 @@ char checkWin();
 int init();
 int sortieren();
 int auswahl();
-int eingabe();
+int nameEingabe();
 int highScoreList();
 int sucheName();
 int resetDisplayBoard();
@@ -199,7 +199,7 @@ int auswahl()
         printf("1: Neuen Spieler erstellen\n2: High-Score Liste erstellen\n3: Ausgabe der Daten eines Nutzers via Namen\n4: Spielen\n0: exit\n");
         scanf("%d", &cas);
         switch(cas) {
-            case 1: printf("Neuen Nutzer anlegen:\n"); eingabe(); break;
+            case 1: printf("Neuen Nutzer anlegen:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
             case 3: printf("Gebe den zu suchenden Namen ein: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); sucheName(nameSearch); break;
             case 4: resetDisplayBoard(); return 0;
@@ -213,7 +213,7 @@ int auswahl()
     return 0;
 }
 
-int eingabe()
+int nameEingabe()
 {
     char name[NAME_LEN];
     // die drei variablen sind unbenutzt!!
@@ -226,9 +226,17 @@ int eingabe()
     {
         printf("Gebe den Namen ein: ");
         scanf("%s", &name);
+        for (int i = 0; i < NAME_LEN; i++)
+        {
+            if (name[i] == 59)
+            {
+                name[i] = 44;
+            }
+        }
         printf("Stimmt die Eingabe %s (y/n)?", name);
         scanf(" %c", &yn);
     }
+
 
     spielerAnzahl++;
     strcpy(spielerListe[spielerAnzahl - 1].name, name);
