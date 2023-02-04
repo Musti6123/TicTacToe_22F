@@ -46,6 +46,7 @@ int main() {
     char createNameInput; // to save y or n from user input
     while (yn !=110)
     {
+        yn = 1; // reset yn! Important :)
         auswahl();
 
         // get player names
@@ -345,9 +346,6 @@ void addNewPlayer(char name[NAME_LEN])
  */
 int highScoreList()
 {
-
-
-
     sortieren();
     printf("Platzierung\t| Name                      | Score\t| Anzahl der Spiele\n");
     for (int i = 0; i < spielerAnzahl; i++)
