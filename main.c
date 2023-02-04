@@ -273,12 +273,18 @@ int auswahl()
         system("cls");
         printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n0: Exit\n");
         scanf("%d", &cas);
+        cas = cas > 4 || cas < 0? 5 : cas; // check if input is valid -> (0-4)
         switch(cas) {
             case 1: printf("Create a new Player:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
             case 3: printf("Enter the player name to search for: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); getPlayerInformation(nameSearch); break;
             case 4: resetDisplayBoard(); return 0;
-            case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
+            case 5:
+                printf("Wrong input!!\nPlease enter numbers between (0-4)\n");
+                printf("Click any key to continue...\n");
+                fflush ( stdin );
+                getchar();
+                break;
             case 0:
                 // Daten speichern vor dem Beenden von Programm
                 close();
