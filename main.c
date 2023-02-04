@@ -271,12 +271,12 @@ int auswahl()
     while (cas != 0)
     {
         system("cls");
-        printf("1: Neuen Spieler erstellen\n2: High-Score Liste erstellen\n3: Ausgabe der Daten eines Nutzers via Namen\n4: Spielen\n0: exit\n");
+        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n0: Exit\n");
         scanf("%d", &cas);
         switch(cas) {
-            case 1: printf("Neuen Nutzer anlegen:\n"); nameEingabe(); break;
+            case 1: printf("Create a new Player:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
-            case 3: printf("Gebe den zu suchenden Namen ein: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); getPlayerInformation(nameSearch); break;
+            case 3: printf("Enter the player name to search for: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); getPlayerInformation(nameSearch); break;
             case 4: resetDisplayBoard(); return 0;
             case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
             case 0:
@@ -300,7 +300,7 @@ int nameEingabe()
     char yn = 110;
     while (yn != 121)
     {
-        printf("Gebe den Namen ein: ");
+        printf("Please enter a name: ");
         scanf("%s", &name);
         for (int i = 0; i < NAME_LEN; i++)
         {
@@ -309,7 +309,7 @@ int nameEingabe()
                 name[i] = 44;
             }
         }
-        printf("Stimmt die Eingabe %s (y/n)?", name);
+        printf("Is the input correct %s (y/n)?", name);
         scanf(" %c", &yn);
     }
 
@@ -332,8 +332,8 @@ void addNewPlayer(char name[NAME_LEN])
         spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
     } else
     {
-        printf("Spieler \"%s\" wurde schon registstriert.\n", spielerListe[i].name);
-        printf("Drücke eine Taste, um fortzufahren...\n");
+        printf("Player \"%s\" is already registered.\n", spielerListe[i].name);
+        printf("Click any key to continue...\n");
         fflush ( stdin );
         getchar();
     }
@@ -347,7 +347,7 @@ void addNewPlayer(char name[NAME_LEN])
 int highScoreList()
 {
     sortieren();
-    printf("Platzierung\t| Name                      | Score\t| Anzahl der Spiele\n");
+    printf("Rank\t| Name                      | Score\t| Games played\n");
     for (int i = 0; i < spielerAnzahl; i++)
     {
         printf("%d.\t\t| %s", spielerListe[i].platzierung, spielerListe[i].name);
@@ -362,7 +362,7 @@ int highScoreList()
 
         printf("| %d\n", spielerListe[i].anzahlDerSpiele);
     }
-    printf("Drücke eine Taste, um fortzufahren...\n");
+    printf("Click any key to continue...\n");
     fflush ( stdin );
     getchar();
     return 0;
@@ -377,18 +377,18 @@ void getPlayerInformation(char name[NAME_LEN])
     int i = getPlayerIndexByName(name);
     if(i == PLAYER_NAME_NOT_FOUND){
         printf("The Player with the name %s was not found!\n", name);
-        printf("Click any key to continue!");
+        printf("Click any key to continue...");
         fflush ( stdin );
         getchar();
         return;
     }
-    printf("Der gesuchte name hat den Index: %d\n\n", i);
+    printf("The player has the index: %d\n\n", i);
     printf("Name:              %s\n", spielerListe[i].name);
-    printf("Platzierung:       %d\n", spielerListe[i].platzierung);
+    printf("Rank:              %d\n", spielerListe[i].platzierung);
     printf("Score:             %d\n", spielerListe[i].score);
-    printf("Anzahl der Spiele: %d\n", spielerListe[i].anzahlDerSpiele);
+    printf("Games played:      %d\n", spielerListe[i].anzahlDerSpiele);
     printf("\n");
-    printf("Drücke eine Taste, um fortzufahren...\n");
+    printf("Click any key to continue...\n");
     fflush ( stdin );
     getchar();
 }
@@ -502,7 +502,7 @@ int close(){
     database = fopen(DATABASE_FILEPATH, "w");
 
     if(database == NULL){
-        printf("Fehler beim öffenen der Datenbank!");
+        printf("Error opening database!");
         return 0;
     }
 
