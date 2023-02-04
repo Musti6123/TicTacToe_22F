@@ -65,6 +65,7 @@ int main() {
 
             if(createNameInput == 121 || createNameInput == 89) {// if y or Y
                 addNewPlayer(playerX); // create the player
+                playerXIndex = getPlayerIndexByName(playerX); // get the index after creation
             }
             else{
                 continue; // skip one iteration of the while loop
@@ -80,6 +81,7 @@ int main() {
 
             if(createNameInput == 121 || createNameInput == 89) {// if y or Y
                 addNewPlayer(playerO); // create the player
+                playerOIndex = getPlayerIndexByName(playerO); // get the index after creation
             }
             else{
                 continue; // skip one iteration of the while loop
@@ -88,6 +90,7 @@ int main() {
 
         int x, y;
         char turn = 'X';
+        char checkwin;
 
         displayBoard();
         for (int i = 0; i < 9; i++) {
@@ -107,7 +110,7 @@ int main() {
             }
             displayBoard();
 
-            char checkwin = checkWin();
+            checkwin = checkWin();
             if(checkwin == 88)
             {
                 printf("\nPlayer X (%s) won\n", playerX);
@@ -126,8 +129,6 @@ int main() {
                 spielerListe[playerOIndex].anzahlDerSpiele++;
                 i = 10;
             }
-
-
         }
 
         while (yn != 121)
@@ -448,53 +449,32 @@ int resetDisplayBoard()
 }
 
 /*
- * Bei aufruf dieser FUnktion wird überprüft ob Spieler X oder Spieler O gewonnen hat
+ * Bei aufruf dieser Funktion wird überprüft ob Spieler X oder Spieler O gewonnen hat
  */
-char checkWin()
-{
-    char winchecker[4];
-    for (int i = 0; i < 3; i++)
+char checkWin(){
+    // check rows and columns
+    for(int i = 0; i < 3; i++)
     {
-        for (int j = 0; j < 3; j++)
+        if(board[i][0] == board[i][1] && board[i][0] == board[i][2] && board[i][0] != ' ')
         {
-            winchecker[j] = board[j][i];
+            return board[i][0];
         }
-        if (strcmp(board[i], "XXX") == 0 || strcmp(winchecker, "XXX") == 0)
+        if(board[0][i] == board[1][i] && board[0][i] == board[2][i] && board[0][i] != ' ')
         {
-            return 88;
-        }
-        if (strcmp(board[i], "OOO") == 0 || strcmp(winchecker, "OOO") == 0)
-        {
-            return 79;
+            return board[0][i];
         }
     }
-    for (int i = 0; i < 3; i++)
+    // check diagonals
+    if(board[0][0] == board[1][1] & board[0][0] == board[2][2] && board[0][0] != ' ')
     {
-        winchecker[i] = board[i][i];
+        return board[0][0];
     }
-    if (strcmp(winchecker, "XXX") == 0)
+    if(board[0][2] == board[1][1] & board[0][2] == board[2][0] && board[0][2] != ' ')
     {
-        return 88;
+        return board[0][2];
     }
-    if (strcmp(winchecker, "OOO") == 0)
-    {
-        return 79;
-    }
-    int j = 2;
-    for (int i = 0; i < 3; i++)
-    {
-        winchecker[i] = board[i][j];
-        j--;
-    }
-    if (strcmp(winchecker, "XXX") == 0)
-    {
-        return 88;
-    }
-    if (strcmp(winchecker, "OOO") == 0)
-    {
-        return 79;
-    }
-    return 78;
+
+    return ' ';
 }
 
 int getPlayerIndexByName(char name[NAME_LEN]){
