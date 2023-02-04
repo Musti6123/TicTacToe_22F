@@ -189,12 +189,12 @@ void init()
                         spielerListe[spielerAnzahl].score *= -1; // turn score to a negative number
                         negativeScore = 0;  // reset to false
                     }
-                    spielerListe[spielerAnzahl].platzierung *= 10;
-                    spielerListe[spielerAnzahl].platzierung += (int)(line[j]) - 48;
-                    break;
-                case 3:
                     spielerListe[spielerAnzahl].anzahlDerSpiele *= 10;
                     spielerListe[spielerAnzahl].anzahlDerSpiele += (int)(line[j]) - 48;
+                    break;
+                case 3:
+                    spielerListe[spielerAnzahl].platzierung *= 10;
+                    spielerListe[spielerAnzahl].platzierung += (int)(line[j]) - 48;
                     break;
                 default:
                     break;
@@ -210,36 +210,20 @@ void init()
  */
 int sortieren()
 {
-    int t = 1;
-    char tname[NAME_LEN];
-    int tscore, tplatzierung, tanzahlDerSpiele;
-    while(t != 0) // solange die sortierung nicht stimmt, also solange es ein score[i] gibt der größer ist als score[i+1]
-    {
-        t = 0;
-        for (int i = 0; i < spielerAnzahl-1; i++) {  // alle Spieler durchiterieren
-            if(spielerListe[i].score < spielerListe[i+1].score) // wenn score von i größer ist als der von i+1
-            {
-                t = 1;
-                strcpy(tname, spielerListe[i].name); // zwischenspeicherung der Attribute
-                tscore = spielerListe[i].score;
-                tplatzierung = spielerListe[i].platzierung;
-                tanzahlDerSpiele = spielerListe[i].anzahlDerSpiele;
-                strcpy(spielerListe[i].name, spielerListe[i+1].name); // tauschen der Attribute von i und i+1
-                spielerListe[i].score = spielerListe[i+1].score;
-                spielerListe[i].platzierung = spielerListe[i+1].platzierung;
-                spielerListe[i].anzahlDerSpiele = spielerListe[i+1].anzahlDerSpiele;
-                strcpy(spielerListe[i+1].name, tname);
-                spielerListe[i+1].score = tscore;
-                spielerListe[i+1].platzierung = tplatzierung;
-                spielerListe[i+1].anzahlDerSpiele = tanzahlDerSpiele;
+    TSPIELER temp;
+    int i,j,k;
+    for(i = 0; i < spielerAnzahl - 1; i++){
+        for(j = 0; j < spielerAnzahl - i - 1 ;j++){
+            if(spielerListe[j].score < spielerListe[j+1].score){
+                temp = spielerListe[j];
+                spielerListe[j] = spielerListe[j+1];
+                spielerListe[j+1] = temp;
             }
         }
     }
-
-    for (int i = 0; i < spielerAnzahl; ++i) { // platzierung in Array umschreiben
-        spielerListe[i].platzierung = i+1;
+    for (k = 0; k < spielerAnzahl; k++) { // platzierung in Array umschreiben
+        spielerListe[k].platzierung = k+1;
     }
-
     return 0;
 }
 
