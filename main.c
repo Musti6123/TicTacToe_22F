@@ -33,7 +33,7 @@ int sortieren();
 int auswahl();
 int nameEingabe();
 int highScoreList();
-int getPlayerInformation();
+void getPlayerInformation(char name[]);
 int resetDisplayBoard();
 int getPlayerIndexByName(char name[]);
 void addNewPlayer(char name[]);
@@ -280,7 +280,7 @@ int auswahl()
             case 4: resetDisplayBoard(); return 0;
             case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
             case 0:
-                // Daten speichern before vor dem Beenden von Programm
+                // Daten speichern vor dem Beenden von Programm
                 close();
                 exit(0);
         }
@@ -372,10 +372,16 @@ int highScoreList()
  * Sucht nach einem Spieler und gibt dessen Attribute aus
  * @return index des gesuchten Spielers
  */
-int getPlayerInformation(char name[NAME_LEN])
+void getPlayerInformation(char name[NAME_LEN])
 {
     int i = getPlayerIndexByName(name);
-
+    if(i == PLAYER_NAME_NOT_FOUND){
+        printf("The Player with the name %s was not found!\n", name);
+        printf("Click any key to continue!");
+        fflush ( stdin );
+        getchar();
+        return;
+    }
     printf("Der gesuchte name hat den Index: %d\n\n", i);
     printf("Name:              %s\n", spielerListe[i].name);
     printf("Platzierung:       %d\n", spielerListe[i].platzierung);
@@ -385,9 +391,6 @@ int getPlayerInformation(char name[NAME_LEN])
     printf("Drücke eine Taste, um fortzufahren...\n");
     fflush ( stdin );
     getchar();
-    return i;
-
-    return 0;
 }
 
 /*
