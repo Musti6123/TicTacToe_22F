@@ -95,7 +95,7 @@ int main() {
 
         displayBoard();
         for (int i = 0; i < 9; i++) {
-            printf("Player %c turn. Enter row and column (x y): ", turn);
+            printf("Player %c (%s) turn. Enter row and column (x y): ", turn, (i % 2 == 0? playerX : playerO));
             scanf("%d %d", &x, &y);
             if (board[x][y] == ' ') {
                 board[x][y] = turn;
