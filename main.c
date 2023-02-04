@@ -5,7 +5,7 @@
 #define AC_BLUE "\033[0;34m"
 #define AC_NORMAL "\033[0m"
 #define AC_RED "\033[0;31m"
-#define NAME_LEN 50
+#define NAME_LEN 25
 #define MAX_LINE_LENGTH 100
 #define MAX_SPIELER 50
 #define DATABASE_FILEPATH "database.txt"
@@ -33,7 +33,7 @@ int sortieren();
 int auswahl();
 int nameEingabe();
 int highScoreList();
-int sucheName();
+int getPlayerInformation();
 int resetDisplayBoard();
 int getPlayerIndexByName(char name[]);
 void addNewPlayer(char name[]);
@@ -110,21 +110,34 @@ int main() {
             char checkwin = checkWin();
             if(checkwin == 88)
             {
-                printf("\nPlayer X won\n");
+                printf("\nPlayer X (%s) won\n", playerX);
+                spielerListe[playerXIndex].score++;
+                spielerListe[playerOIndex].score--;
+                spielerListe[playerXIndex].anzahlDerSpiele++;
+                spielerListe[playerOIndex].anzahlDerSpiele++;
                 i = 10;
             }
             if(checkwin == 79)
             {
-                printf("\nPlayer O won\n");
+                printf("\nPlayer O (%s) won\n", playerO);
+                spielerListe[playerOIndex].score++; // score anpassen
+                spielerListe[playerXIndex].score--;
+                spielerListe[playerXIndex].anzahlDerSpiele++; // anzahl der Spiele anpassen
+                spielerListe[playerOIndex].anzahlDerSpiele++;
                 i = 10;
             }
 
+
         }
 
-        printf("y: Back to menu\nn: Exit");
-        scanf(" %c", &yn);
-        if (yn == 110)
-            return 0;
+        while (yn != 121)
+        {
+            printf("y: Back to menu\nn: Exit\n");
+            scanf(" %c", &yn);
+            if (yn == 110)
+                close();
+        }
+
     }
 
     return 0;
@@ -137,10 +150,6 @@ int main() {
 int init()
 {
     FILE *file = fopen(DATABASE_FILEPATH, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        exit(1);
-    }
 
     char line[MAX_LINE_LENGTH];
     spielerAnzahl = 0;
@@ -152,14 +161,24 @@ int init()
             } else
             {
                 int hscore = 0;
+                int n = 0;
+                if(line[i] == 45)
+                {
+                    i++;
+                    n = 1;
+                }
                 for (int j = 0; j < 10; ++j) {
                     i++;
+
                     if(line[i] != 59)
                     {
                         hscore *= 10;
                         hscore += (int)(line[i]) - 48;
                     } else
                     {
+                        if (n == 1)
+                            hscore *= -1;
+
                         spielerListe[spielerAnzahl].score = hscore;
                         break;
                     }
@@ -208,18 +227,18 @@ int sortieren()
     int t = 1;
     char tname[NAME_LEN];
     int tscore, tplatzierung, tanzahlDerSpiele;
-    while(t != 0)
+    while(t != 0) // solange die sortierung nicht stimmt, also solange es ein score[i] gibt der größer ist als score[i+1]
     {
         t = 0;
-        for (int i = 0; i < spielerAnzahl-1; i++) {
-            if(spielerListe[i].score < spielerListe[i+1].score)
+        for (int i = 0; i < spielerAnzahl-1; i++) {  // alle Spieler durchiterieren
+            if(spielerListe[i].score < spielerListe[i+1].score) // wenn score von i größer ist als der von i+1
             {
                 t = 1;
-                strcpy(tname, spielerListe[i].name);
+                strcpy(tname, spielerListe[i].name); // zwischenspeicherung der Attribute
                 tscore = spielerListe[i].score;
                 tplatzierung = spielerListe[i].platzierung;
                 tanzahlDerSpiele = spielerListe[i].anzahlDerSpiele;
-                strcpy(spielerListe[i].name, spielerListe[i+1].name);
+                strcpy(spielerListe[i].name, spielerListe[i+1].name); // tauschen der Attribute von i und i+1
                 spielerListe[i].score = spielerListe[i+1].score;
                 spielerListe[i].platzierung = spielerListe[i+1].platzierung;
                 spielerListe[i].anzahlDerSpiele = spielerListe[i+1].anzahlDerSpiele;
@@ -231,7 +250,7 @@ int sortieren()
         }
     }
 
-    for (int i = 0; i < spielerAnzahl; ++i) {
+    for (int i = 0; i < spielerAnzahl; ++i) { // platzierung in Array umschreiben
         spielerListe[i].platzierung = i+1;
     }
 
@@ -252,7 +271,7 @@ int auswahl()
         switch(cas) {
             case 1: printf("Neuen Nutzer anlegen:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
-            case 3: printf("Gebe den zu suchenden Namen ein: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); sucheName(nameSearch); break;
+            case 3: printf("Gebe den zu suchenden Namen ein: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); getPlayerInformation(nameSearch); break;
             case 4: resetDisplayBoard(); return 0;
             case 5: printf("Geben Sie bitte eine Zahl ein (0-4)"); break;
             case 0:
@@ -298,11 +317,22 @@ int nameEingabe()
 // it is the same logic but placed in a function to be used in other places
 void addNewPlayer(char name[NAME_LEN])
 {
-    spielerAnzahl++;
-    strcpy(spielerListe[spielerAnzahl - 1].name, name);
-    spielerListe[spielerAnzahl - 1].score = 0;
-    spielerListe[spielerAnzahl - 1].platzierung = spielerAnzahl;
-    spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
+    int i = getPlayerIndexByName(name);
+    if (i == PLAYER_NAME_NOT_FOUND) // überprüfen ob es diesen Spielername nicht gibt
+    {
+        spielerAnzahl++;
+        strcpy(spielerListe[spielerAnzahl - 1].name, name);
+        spielerListe[spielerAnzahl - 1].score = 0;
+        spielerListe[spielerAnzahl - 1].platzierung = spielerAnzahl;
+        spielerListe[spielerAnzahl - 1].anzahlDerSpiele = 0;
+    } else
+    {
+        printf("Spieler \"%s\" wurde schon registstriert.\n", spielerListe[i].name);
+        printf("Drücke eine Taste, um fortzufahren...\n");
+        fflush ( stdin );
+        getchar();
+    }
+
 }
 
 /*
@@ -311,13 +341,26 @@ void addNewPlayer(char name[NAME_LEN])
  */
 int highScoreList()
 {
+
+
+
     sortieren();
-    printf("Platzierung   |   Name   |   Score   |   Anzahl der Spiele");
+    printf("Platzierung\t| Name                      | Score\t| Anzahl der Spiele\n");
     for (int i = 0; i < spielerAnzahl; i++)
     {
-        printf("%d.   |   %s   |   %d   |   %d", spielerListe[i].platzierung, spielerListe[i].name, spielerListe[i].score, spielerListe[i].anzahlDerSpiele);
+        printf("%d.\t\t| %s", spielerListe[i].platzierung, spielerListe[i].name);
+        for (int j = 0; j < 25 - strlen(spielerListe[i].name); j++) // Abstände gleich machen
+        {
+            printf(" ");
+        }
+        printf(" | %d\t", spielerListe[i].score);
+        if (spielerListe[i].score < 10)
+            printf("\t");
+
+        printf("| %d\n", spielerListe[i].anzahlDerSpiele);
     }
     printf("Drücke eine Taste, um fortzufahren...\n");
+    fflush ( stdin );
     getchar();
     return 0;
 }
@@ -326,23 +369,20 @@ int highScoreList()
  * Sucht nach einem Spieler und gibt dessen Attribute aus
  * @return index des gesuchten Spielers
  */
-int sucheName(char name[NAME_LEN])
+int getPlayerInformation(char name[NAME_LEN])
 {
-    for (int i = 0; i < spielerAnzahl; i++)
-    {
-        if (strncmp(spielerListe[i].name, name, NAME_LEN) == 0)
-        {
-            printf("Der gesuchte name hat den Index: %d\n\n", i);
-            printf("Name:              %s\n", spielerListe[i].name);
-            printf("Platzierung:       %d\n", spielerListe[i].platzierung);
-            printf("Score:             %d\n", spielerListe[i].score);
-            printf("Anzahl der Spiele: %d\n", spielerListe[i].anzahlDerSpiele);
-            printf("\n");
-            printf("Drücke eine Taste, um fortzufahren...\n");
-            getchar();
-            return i;
-        }
-    }
+    int i = getPlayerIndexByName(name);
+
+    printf("Der gesuchte name hat den Index: %d\n\n", i);
+    printf("Name:              %s\n", spielerListe[i].name);
+    printf("Platzierung:       %d\n", spielerListe[i].platzierung);
+    printf("Score:             %d\n", spielerListe[i].score);
+    printf("Anzahl der Spiele: %d\n", spielerListe[i].anzahlDerSpiele);
+    printf("\n");
+    printf("Drücke eine Taste, um fortzufahren...\n");
+    fflush ( stdin );
+    getchar();
+    return i;
 
     return 0;
 }
@@ -454,18 +494,17 @@ char checkWin()
     return 78;
 }
 
-
-
 int getPlayerIndexByName(char name[NAME_LEN]){
     for (int i = 0; i < spielerAnzahl; i++)
     {
-        if (strncmp(spielerListe[i].name, name, NAME_LEN) == 0)
+        if (strncasecmp(spielerListe[i].name, name, NAME_LEN) == 0)
         {
             return i;
         }
     }
     return PLAYER_NAME_NOT_FOUND;
 }
+
 /*
  * Speichern der spielerListe in einer text Datei
  * Format: name;score;anzahlDerSpiele;platzierung
@@ -492,13 +531,13 @@ int close(){
                  spielerListe[i].score,
                  spielerListe[i].anzahlDerSpiele,
                  spielerListe[i].platzierung
-                 );
+        );
 
         // save_format in datenbank speichern
         fputs(save_format,database);
     }
 
     fclose(database);
-
+    exit(0);
     return 1;
 }
