@@ -28,7 +28,7 @@ TSPIELER spielerListe[MAX_SPIELER];
 
 void displayBoard();
 char checkWin();
-int init();
+void init();
 int sortieren();
 int auswahl();
 int nameEingabe();
@@ -149,79 +149,60 @@ int main() {
  * Initialisierung des Spiels
  * Spieler werden aus Datenbank geladen und in spielerListe geschrieben
  */
-int init()
+void init()
 {
     FILE *file = fopen(DATABASE_FILEPATH, "r");
-
     char line[MAX_LINE_LENGTH];
+    int countSemicolon;
+    _Bool negativeScore = 0; // store 1 if the Score is negative
     spielerAnzahl = 0;
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-        for (int i = 0; i < MAX_LINE_LENGTH; i++) {
-            if(line[i] != 59)
-            {
-                spielerListe[spielerAnzahl].name[i] = line[i];
-            } else
-            {
-                int hscore = 0;
-                int n = 0;
-                i++;
-                if(line[i] == 45)
-                {
-                    i++;
-                    n = 1;
-                }
-                for (int j = 0; j < 10; ++j) {
 
+    for (int i = 0; fgets(line, MAX_LINE_LENGTH, file) != NULL; ++i) {
+        countSemicolon = 0; // reset counter
+        // set initial values of the player to 0
+        spielerListe[spielerAnzahl].score = 0;
+        spielerListe[spielerAnzahl].platzierung = 0;
+        spielerListe[spielerAnzahl].anzahlDerSpiele = 0;
 
-                    if(line[i] != 59)
-                    {
-                        hscore *= 10;
-                        hscore += (int)(line[i]) - 48;
-                    } else
-                    {
-                        if (n == 1)
-                            hscore *= -1;
-
-                        spielerListe[spielerAnzahl].score = hscore;
-                        break;
-
-                    }
-                    i++;
-                }
-                int hplatzierung = 0;
-                for (int j = 0; j < 10; ++j) {
-                    i++;
-                    if(line[i] != 59)
-                    {
-                        hplatzierung *= 10;
-                        hplatzierung += (int)(line[i]) - 48;
-                    } else
-                    {
-                        spielerListe[spielerAnzahl].platzierung = hplatzierung;
+        for(int j= 0; countSemicolon <= 3; ++j){
+            if(line[j] == ';'){
+                countSemicolon++;
+                continue;
+            }
+            switch (countSemicolon) {
+                case 0:
+                    spielerListe[spielerAnzahl].name[j] = line[j];
+                    break;
+                case 1:
+                    if(line[j] == 45){
+                        negativeScore = 1;
                         break;
                     }
-                }
-                int hanzahlDerSpiele = 0;
-                for (int j = 0; j < 10; ++j) {
-                    i++;
-                    if(line[i] != 59)
-                    {
-                        hanzahlDerSpiele *= 10;
-                        hanzahlDerSpiele += (int)(line[i]) - 48;
-                    } else
-                    {
-                        spielerListe[spielerAnzahl].anzahlDerSpiele = hanzahlDerSpiele;
-                        i++;
-                        break;
+                    spielerListe[spielerAnzahl].score *= 10;
+                    spielerListe[spielerAnzahl].score += (int)(line[j]) - 48;
+                    break;
+                case 2:
+                    // doing the negative score here
+                    // where the score is already calculated and
+                    // to avoid running it multiple times in case 1
+                    if(negativeScore){
+                        spielerListe[spielerAnzahl].score *= -1; // turn score to a negative number
+                        negativeScore = 0;  // reset to false
                     }
-                }
-                break;
+                    spielerListe[spielerAnzahl].platzierung *= 10;
+                    spielerListe[spielerAnzahl].platzierung += (int)(line[j]) - 48;
+                    break;
+                case 3:
+                    spielerListe[spielerAnzahl].anzahlDerSpiele *= 10;
+                    spielerListe[spielerAnzahl].anzahlDerSpiele += (int)(line[j]) - 48;
+                    break;
+                default:
+                    break;
             }
         }
         spielerAnzahl++;
     }
     fclose(file);
-    return 0;
 }
 
 /*
@@ -353,7 +334,7 @@ void addNewPlayer(char name[NAME_LEN])
 int highScoreList()
 {
     sortieren();
-    printf("Rank\t| Name                      | Score\t| Games played\n");
+    printf("Rank\t\t| Name                      | Score\t| Games played\n");
     for (int i = 0; i < spielerAnzahl; i++)
     {
         printf("%d.\t\t| %s", spielerListe[i].platzierung, spielerListe[i].name);
