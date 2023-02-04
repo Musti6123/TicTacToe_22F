@@ -357,7 +357,8 @@ int highScoreList()
             printf(" ");
         }
         printf(" | %d\t", spielerListe[i].score);
-        if (spielerListe[i].score < 10)
+
+        if (spielerListe[i].score < 10 && spielerListe[i].score >= 0)
             printf("\t");
 
         printf("| %d\n", spielerListe[i].anzahlDerSpiele);
