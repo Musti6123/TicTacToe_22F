@@ -162,13 +162,14 @@ int init()
             {
                 int hscore = 0;
                 int n = 0;
+                i++;
                 if(line[i] == 45)
                 {
                     i++;
                     n = 1;
                 }
                 for (int j = 0; j < 10; ++j) {
-                    i++;
+
 
                     if(line[i] != 59)
                     {
@@ -181,7 +182,9 @@ int init()
 
                         spielerListe[spielerAnzahl].score = hscore;
                         break;
+
                     }
+                    i++;
                 }
                 int hplatzierung = 0;
                 for (int j = 0; j < 10; ++j) {
