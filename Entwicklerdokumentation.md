@@ -33,7 +33,7 @@ der Möglicchkeit zum Speichern mehrere Spieler und deren Scores, Anzahlspiele u
 * Spieler werden aus Datenbank geladen und in spielerListe geschrieben
 ---
     int sortieren();
-* Sortiert die spielerListe nach Score
+* Sortiert die spielerListe nach Score (Bubblesort)
 ---
     int auswahl();
 * Anzeigen des Spiel-Menus
