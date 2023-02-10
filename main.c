@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+
 #define AC_BLUE "\033[0;34m"
 #define AC_NORMAL "\033[0m"
 #define AC_RED "\033[0;31m"
@@ -57,7 +58,9 @@ int main() {
         int playerOIndex = PLAYER_NAME_NOT_FOUND;
 
         printf("Enter the name of the player X: ");
-        scanf("%s", playerX);
+        fflush(stdin);
+        fgets(playerX, NAME_LEN, stdin);
+        playerX[strcspn(playerX, "\n")] = 0; // removing "\n"
         playerXIndex = getPlayerIndexByName(playerX);
 
         if(playerXIndex == PLAYER_NAME_NOT_FOUND){
@@ -73,7 +76,9 @@ int main() {
             }
         }
         printf("Enter the name of the player O: ");
-        scanf("%s", playerO);
+        fflush(stdin);
+        fgets(playerO, NAME_LEN, stdin);
+        playerO[strcspn(playerO, "\n")] = 0; // removing "\n"
         playerOIndex = getPlayerIndexByName(playerO);
 
         if(playerOIndex == PLAYER_NAME_NOT_FOUND){
@@ -206,7 +211,7 @@ void init()
 }
 
 /*
- * Sortiert die spielerListe nach Score
+ * Sortiert die spielerListe nach Score (Bubblesort)
  */
 int sortieren()
 {
@@ -242,7 +247,14 @@ int auswahl()
         switch(cas) {
             case 1: printf("Create a new Player:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
-            case 3: printf("Enter the player name to search for: "); char nameSearch[NAME_LEN]; scanf("%s", &nameSearch[0]); getPlayerInformation(nameSearch); break;
+            case 3:
+                printf("Enter the player name to search for: ");
+                char nameSearch[NAME_LEN];
+                fflush(stdin);
+                fgets(nameSearch, NAME_LEN, stdin);
+                nameSearch[strcspn(nameSearch, "\n")] = 0; // removing "\n"
+                getPlayerInformation(nameSearch);
+                break;
             case 4: resetDisplayBoard(); return 0;
             case 5:
                 printf("Wrong input!!\nPlease enter numbers between (0-4)\n");
@@ -272,7 +284,9 @@ int nameEingabe()
     while (yn != 121)
     {
         printf("Please enter a name: ");
-        scanf("%s", &name);
+        fflush(stdin);
+        fgets(name, NAME_LEN, stdin);
+        name[strcspn(name, "\n")] = 0; // removing "\n"
         for (int i = 0; i < NAME_LEN; i++)
         {
             if (name[i] == 59)
@@ -322,7 +336,7 @@ int highScoreList()
     for (int i = 0; i < spielerAnzahl; i++)
     {
         printf("%d.\t\t| %s", spielerListe[i].platzierung, spielerListe[i].name);
-        for (int j = 0; j < 25 - strlen(spielerListe[i].name); j++) // Abstände gleich machen
+        for (int j = 0; j < NAME_LEN - strlen(spielerListe[i].name); j++) // Abstände gleich machen
         {
             printf(" ");
         }
@@ -424,7 +438,8 @@ int resetDisplayBoard()
 /*
  * Bei aufruf dieser Funktion wird überprüft ob Spieler X oder Spieler O gewonnen hat
  */
-char checkWin(){
+char checkWin()
+{
     // check rows and columns
     for(int i = 0; i < 3; i++)
     {
@@ -450,7 +465,8 @@ char checkWin(){
     return ' ';
 }
 
-int getPlayerIndexByName(char name[NAME_LEN]){
+int getPlayerIndexByName(char name[NAME_LEN])
+{
     for (int i = 0; i < spielerAnzahl; i++)
     {
         if (strncasecmp(spielerListe[i].name, name, NAME_LEN) == 0)
@@ -460,6 +476,13 @@ int getPlayerIndexByName(char name[NAME_LEN]){
     }
     return PLAYER_NAME_NOT_FOUND;
 }
+
+
+int deletePlayer()
+{
+
+}
+
 
 /*
  * Speichern der spielerListe in einer text Datei
@@ -478,10 +501,10 @@ int close(){
     }
 
     // Die Variable save_format zum speichern der formattierte String
-    char save_format[64];
+    char save_format[100];
     for (int i = 0; i < spielerAnzahl; i++) {
 
-        // alle daten formattieren und in die Variable save_format speichern
+        // alle daten formatieren und in die Variable save_format speichern
         snprintf(save_format, sizeof(save_format), "%s;%i;%i;%i;\n",
                  spielerListe[i].name,
                  spielerListe[i].score,
