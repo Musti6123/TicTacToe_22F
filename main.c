@@ -15,6 +15,7 @@
 char board[4][4] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 char rBoard[4][4] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 int spielerAnzahl = 0;
+int cas = 6;
 
 typedef struct
 {
@@ -38,6 +39,8 @@ void getPlayerInformation(char name[]);
 int resetDisplayBoard();
 int getPlayerIndexByName(char name[]);
 void addNewPlayer(char name[]);
+int delete();
+int deleteByIndex(int index);
 int close();
 
 
@@ -237,13 +240,13 @@ int sortieren()
  */
 int auswahl()
 {
-    int cas = 5;
+    cas = 6;
     while (cas != 0)
     {
         system("cls");
-        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n0: Exit\n");
+        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n5: Delete player by name\n0: Exit\n");
         scanf("%d", &cas);
-        cas = cas > 4 || cas < 0? 5 : cas; // check if input is valid -> (0-4)
+        cas = cas > 5 || cas < 0? 6 : cas; // check if input is valid -> (0-5)
         switch(cas) {
             case 1: printf("Create a new Player:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
@@ -257,7 +260,9 @@ int auswahl()
                 break;
             case 4: resetDisplayBoard(); return 0;
             case 5:
-                printf("Wrong input!!\nPlease enter numbers between (0-4)\n");
+                delete();
+            case 6:
+                printf("Wrong input!!\nPlease enter numbers between (0-5)\n");
                 printf("Click any key to continue...\n");
                 fflush ( stdin );
                 getchar();
@@ -373,9 +378,12 @@ void getPlayerInformation(char name[NAME_LEN])
     printf("Score:             %d\n", spielerListe[i].score);
     printf("Games played:      %d\n", spielerListe[i].anzahlDerSpiele);
     printf("\n");
-    printf("Click any key to continue...\n");
-    fflush ( stdin );
-    getchar();
+    if (cas != 5)
+    {
+        printf("Click any key to continue...\n");
+        fflush(stdin);
+        getchar();
+    }
 }
 
 /*
@@ -478,9 +486,46 @@ int getPlayerIndexByName(char name[NAME_LEN])
 }
 
 
-int deletePlayer()
+int delete()
 {
+    printf("Please enter the name to be deleted: ");
+    char deleteName[NAME_LEN];
+    fflush(stdin);
+    fgets(deleteName, NAME_LEN, stdin);
+    deleteName[strcspn(deleteName, "\n")] = 0; // removing "\n"
+    int i = getPlayerIndexByName(deleteName);
+    if(i == PLAYER_NAME_NOT_FOUND){
+        printf("The Player with the name %s was not found!\n", deleteName);
+        printf("Click any key to continue...");
+        fflush ( stdin );
+        getchar();
+        return 0;
+    }
+    printf("Here are the Information of %s:\n", deleteName);
+    getPlayerInformation(deleteName);
+    char yn;
+    while (yn != 121 && yn != 110)
+    {
+        printf("\nAre you sure you want to delete this player? (y/n): ");
+        fflush(stdin);
+        yn = getchar();
+    }
+    if (yn == 121)
+    {
+        deleteByIndex(i);
+    }
+    return 0;
+}
 
+
+int deleteByIndex(int index)
+{
+    for (int i = index; i < spielerAnzahl - 1; i++)
+    {
+        spielerListe[i] = spielerListe[i+1];
+    }
+    spielerAnzahl--;
+    return 0;
 }
 
 
