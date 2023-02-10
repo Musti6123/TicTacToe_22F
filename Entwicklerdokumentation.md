@@ -1,7 +1,7 @@
 # Tic-Tac-Toe Entwicklerdokumentation
 ### Beschreibung:
-die beliebte und einfache Spiel von Toc-Tac-Toe in command line implementiert in der C Programmiersprache mit 
-der Möglicchkeit zum Speichern mehrere Spieler und deren Scores, Anzahlspiele und Rang in einem datenbank (TXT-Datei).
+Das beliebte und einfache Spiel "Toc-Tac-Toe" als command line Spiel implementiert, mithilfe der Programmiersprache C. Außerdem gibt es
+die Möglichkeit Spielernamen, und deren Score, Rang und Spiele Anahl in einer datenbank (TXT-Datei) abzuspeichern.
 ---
 
 ### Code Funktionen:
