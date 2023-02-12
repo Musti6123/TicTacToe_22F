@@ -261,6 +261,7 @@ int auswahl()
             case 4: resetDisplayBoard(); return 0;
             case 5:
                 delete();
+                break;
             case 6:
                 printf("Wrong input!!\nPlease enter numbers between (0-5)\n");
                 printf("Click any key to continue...\n");
