@@ -16,6 +16,8 @@ die Möglichkeit Spielernamen, und deren Score, Rang und Spieleanzahl in einer d
     int resetDisplayBoard();
     int getPlayerIndexByName(char name[]);
     void addNewPlayer(char name[]);
+    int delete();
+    int deleteByIndex(int index);
     int close();
 ---
 ### Beschreibung einzelne Funktionen
@@ -62,6 +64,14 @@ die Möglichkeit Spielernamen, und deren Score, Rang und Spieleanzahl in einer d
 ---
     void addNewPlayer(char name[]);
 * addNewPlayer adds a new player to the array
+---
+    int delete();
+* Eingabe von Spielername
+* aufruf von getPlayerIndexByName Funktion
+* Wenn die Index gefunden wird, wird deleteByIndex Funktion aufgerufen um den Spieler zu löchen
+---
+    int deleteByIndex(int index);
+* Löcht die Daten von dem Spieler mit dem eingegebenen Index
 ---
     int close();
 * Speichert der spielerListe in einer text Datei
