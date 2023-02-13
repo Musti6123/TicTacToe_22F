@@ -291,7 +291,7 @@ int nameEingabe()
     char name[NAME_LEN];
 
     char yn = 110;
-    while (yn != 121)
+    while (yn != 121 && yn !=101)
     {
         printf("Please enter a name: ");
         fflush(stdin);
@@ -304,11 +304,12 @@ int nameEingabe()
                 name[i] = 44;
             }
         }
-        printf("Is the input correct %s (y/n)?", name);
+        printf("Player name \"%s\": \n- Enter \'y\' to save the Player \n- Enter \'n\' to enter the name again \n- Enter \'e\' to exit (changes will not be saved!)\n", name);
         scanf(" %c", &yn);
     }
-
-    addNewPlayer(name);
+    if(yn == 121){
+        addNewPlayer(name);
+    }
 
     return 0;
 }
