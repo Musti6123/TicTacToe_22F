@@ -41,6 +41,7 @@ int getPlayerIndexByName(char name[]);
 void addNewPlayer(char name[]);
 int delete();
 int deleteByIndex(int index);
+void edit();
 int close();
 
 
@@ -244,9 +245,9 @@ int auswahl()
     while (cas != 0)
     {
         system("cls");
-        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n5: Delete player by name\n0: Exit\n");
+        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n5: Delete player by name\n6: Edit Player name\n0: Exit\n");
         scanf("%d", &cas);
-        cas = cas > 5 || cas < 0? 6 : cas; // check if input is valid -> (0-5)
+        cas = cas > 6 || cas < 0? 7 : cas; // check if input is valid -> (0-5)
         switch(cas) {
             case 1: printf("Create a new Player:\n"); nameEingabe(); break;
             case 2: highScoreList(); break;
@@ -263,6 +264,9 @@ int auswahl()
                 delete();
                 break;
             case 6:
+                edit();
+                break;
+            case 7:
                 printf("Wrong input!!\nPlease enter numbers between (0-5)\n");
                 printf("Click any key to continue...\n");
                 fflush ( stdin );
@@ -527,6 +531,43 @@ int deleteByIndex(int index)
     }
     spielerAnzahl--;
     return 0;
+}
+
+void edit(){
+    printf("Please enter the name to be edited: ");
+    char editName[NAME_LEN];
+    char newName[NAME_LEN];
+    fflush(stdin);
+    fgets(editName, NAME_LEN, stdin);
+    editName[strcspn(editName, "\n")] = 0; // removing "\n"
+    int i = getPlayerIndexByName(editName);
+    if(i == PLAYER_NAME_NOT_FOUND){
+        printf("The Player with the name \"%s\" was not found!\n", editName);
+        printf("Click any key to continue...");
+        fflush ( stdin );
+        getchar();
+        return;
+    }
+    printf("Here are the Information of %s:\n", editName);
+    getPlayerInformation(editName);
+    char yn;
+    while (yn != 121 && yn != 110)
+    {
+        printf("Please enter the new name: ");
+
+        fflush(stdin);
+        fgets(newName, NAME_LEN, stdin);
+        newName[strcspn(newName, "\n")] = 0; // removing "\n"
+
+        printf("\nAre you sure you want to change the name from \"%s\" to \"%s\"? (y/n): ", editName, newName);
+        fflush(stdin);
+        yn = getchar();
+    }
+    if (yn == 121)
+    {
+        strcpy(spielerListe[i].name,newName);
+    }
+    return;
 }
 
 

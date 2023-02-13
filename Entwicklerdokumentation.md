@@ -18,6 +18,7 @@ die Möglichkeit Spielernamen, und deren Score, Rang und Spieleanzahl in einer d
     void addNewPlayer(char name[]);
     int delete();
     int deleteByIndex(int index);
+    void edit();
     int close();
 ---
 ### Beschreibung einzelne Funktionen
@@ -72,6 +73,9 @@ die Möglichkeit Spielernamen, und deren Score, Rang und Spieleanzahl in einer d
 ---
     int deleteByIndex(int index);
 * Löcht die Daten von dem Spieler mit dem eingegebenen Index
+---
+    edit();
+* Änderung des Spielernames mit Behaltung von Spielerscore 
 ---
     int close();
 * Speichert der spielerListe in einer text Datei
