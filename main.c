@@ -245,7 +245,7 @@ int auswahl()
     while (cas != 0)
     {
         system("cls");
-        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n5: Delete player by name\n6: Edit Player name\n0: Exit\n");
+        printf("1: Create a new player\n2: Show the High-Score List\n3: Show player data\n4: Play\n5: Delete player by name\n6: Edit player name\n0: Exit\n");
         scanf("%d", &cas);
         cas = cas > 6 || cas < 0? 7 : cas; // check if input is valid -> (0-5)
         switch(cas) {
@@ -304,7 +304,7 @@ int nameEingabe()
                 name[i] = 44;
             }
         }
-        printf("Player name \"%s\": \n- Enter \'y\' to save the Player \n- Enter \'n\' to enter the name again \n- Enter \'e\' to exit (changes will not be saved!)\n", name);
+        printf("Player name \"%s\": \n- Enter \'y\' to save the player \n- Enter \'n\' to enter the name again \n- Enter \'e\' to exit (changes will not be saved!)\n", name);
         scanf(" %c", &yn);
     }
     if(yn == 121){
